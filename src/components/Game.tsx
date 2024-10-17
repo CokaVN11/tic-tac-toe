@@ -52,11 +52,13 @@ const Game: React.FC = () => {
       history.map((_, move) => {
         let description;
         if (move === currentMove) {
-          description = `You are at move #${move}`;
+          description = `You are at move #${move + 1}`;
         } else if (move > 0) {
-          description = `Go to move #${move}, (${history[move].currentMove?.x}, ${history[move].currentMove?.y})`;
+          const currentMove = history[move].currentMove ?? { x: 0, y: 0 };
+          description = `Go to move #${move + 1}, (${currentMove.x + 1}, ${currentMove.y + 1})`;
         } else {
-          description = `Go to game start`;
+          const currentMove = history[move].currentMove ?? { x: 0, y: 0 };
+          description = `Go to game start, (${currentMove.x + 1}, ${currentMove.y + 1})`;
         }
 
         return (
