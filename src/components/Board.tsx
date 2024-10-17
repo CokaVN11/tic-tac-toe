@@ -5,7 +5,7 @@ import React from 'react';
 interface BoardProps {
   readonly xIsNext: boolean;
   readonly squares: Array<string | null>;
-  readonly onPlay: (squares: Array<string | null>) => void;
+  readonly onPlay: (squares: Array<string | null>, { x, y }: { x: number; y: number }) => void;
   readonly boardSize?: number;
 }
 
@@ -46,7 +46,7 @@ const Board: React.FC<BoardProps> = ({ xIsNext, squares, onPlay, boardSize = 3 }
     }
     const nextSquares = squares.slice();
     nextSquares[index] = xIsNext ? 'X' : 'O';
-    onPlay(nextSquares);
+    onPlay(nextSquares, { x: Math.floor(index / boardSize), y: index % boardSize });
   };
 
   const [status, setStatus] = useState<string | null>(null);

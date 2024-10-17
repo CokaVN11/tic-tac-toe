@@ -1,18 +1,31 @@
 import { useCallback, useEffect, useState } from 'react';
 import Board from './Board';
 
+type HistoryState = {
+  squares: Array<string | null>;
+  currentMove?: { x: number; y: number };
+};
+
 const Game: React.FC = () => {
-  const [history, setHistory] = useState<Array<string | null>[]>([Array(9).fill(null)]);
+  const [history, setHistory] = useState<HistoryState[]>([
+    { squares: Array(9).fill(null), currentMove: { x: 0, y: 0 } },
+  ]);
   const [historyOrder, setHistoryOrder] = useState<'asc' | 'desc'>('asc');
   const [historyMoves, setHistoryMoves] = useState<JSX.Element[]>([]);
   const [currentMove, setCurrentMove] = useState(0);
   const [boardSize, setBoardSize] = useState(3);
   const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+  const currentSquares = history[currentMove].squares;
 
   const handlePlay = useCallback(
-    (nextSquares: Array<string | null>) => {
-      const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    (nextSquares: Array<string | null>, { x, y }: { x: number; y: number }) => {
+      const nextHistory = [
+        ...history.slice(0, currentMove + 1),
+        {
+          squares: nextSquares,
+          currentMove: { x, y },
+        },
+      ];
       setHistory(nextHistory);
       setCurrentMove(nextHistory.length - 1);
     },
@@ -25,12 +38,12 @@ const Game: React.FC = () => {
 
   const handleBoardSizeChange = useCallback((newSize: number) => {
     setBoardSize(newSize);
-    setHistory([Array(newSize ** 2).fill(null)]);
+    setHistory([{ squares: Array(newSize ** 2).fill(null) }]);
     setCurrentMove(0);
   }, []);
 
   useEffect(() => {
-    setHistory([Array(boardSize ** 2).fill(null)]);
+    setHistory([{ squares: Array(boardSize ** 2).fill(null) }]);
     setCurrentMove(0);
   }, [boardSize]);
 
@@ -41,7 +54,7 @@ const Game: React.FC = () => {
         if (move === currentMove) {
           description = `You are at move #${move}`;
         } else if (move > 0) {
-          description = `Go to move #${move}`;
+          description = `Go to move #${move}, (${history[move].currentMove?.x}, ${history[move].currentMove?.y})`;
         } else {
           description = `Go to game start`;
         }
