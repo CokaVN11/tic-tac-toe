@@ -20,7 +20,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
 
-  @apply bg-gray-100
+  @apply bg-gray-200;
 }
 
 #root {

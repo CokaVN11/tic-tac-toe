@@ -62,11 +62,11 @@ const Game: React.FC = () => {
         }
 
         return (
-          <li key={move} className="mb-2">
+          <li key={`move-${move}`} className="mx-auto mb-2 w-fit">
             {move === currentMove ? (
               <strong>{description}</strong>
             ) : (
-              <button className={`px-3 py-1 rounded bg-blue-500 text-white`} onClick={() => jumpTo(move)}>
+              <button className={`px-3 py-1 rounded bg-blue-500 text-white w-52`} onClick={() => jumpTo(move)}>
                 {description}
               </button>
             )}
@@ -99,19 +99,19 @@ const Game: React.FC = () => {
           />
         </div>
       </div>
-      <div className="game-board">
+      <div className="bg-slate-50 shadow-md p-4 rounded-lg game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} boardSize={boardSize} />
       </div>
-      <div className="w-full md:w-64">
+      <div className="flex flex-col items-center w-full md:w-64">
         <h2 className="mb-2 font-semibold text-lg">Game History</h2>
         {/* Toggle sort order */}
         <button
-          className="bg-blue-50 hover:bg-blue-100 mb-2 px-3 py-1 rounded-lg text-blue-500 transition-colors duration-200"
+          className="bg-blue-50 hover:bg-blue-100 mb-2 px-3 py-1 border border-blue-600 rounded-lg max-w-fit text-blue-500 transition-colors duration-200"
           onClick={() => setHistoryOrder(historyOrder === 'asc' ? 'desc' : 'asc')}
         >
           {historyOrder === 'asc' ? 'Sort Desc' : 'Sort Asc'}
         </button>
-        <ol>{historyMoves}</ol>
+        <ol className="flex flex-col justify-center">{historyMoves}</ol>
       </div>
     </div>
   );

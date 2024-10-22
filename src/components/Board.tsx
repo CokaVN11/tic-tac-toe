@@ -9,7 +9,13 @@ interface BoardProps {
   readonly boardSize?: number;
 }
 
-const useCalculateWinner = (squares: Array<string | null>, boardSize: number): string | null => {
+/**
+ * Custom hook to calculate the winner of the game
+ * @param squares Board squares
+ * @param boardSize Board size
+ * @returns Winner and winning line
+ */
+const useCalculateWinner = (squares: Array<string | null>, boardSize: number): [string | null, Array<number>] => {
   const lines = useMemo(() => {
     const result = [];
     for (let i = 0; i < boardSize; i++) {
@@ -30,15 +36,15 @@ const useCalculateWinner = (squares: Array<string | null>, boardSize: number): s
         break;
       }
       if (i === line.length - 1) {
-        return squares[line[0]];
+        return [squares[line[0]] as string, line];
       }
     }
   }
-  return null;
+  return [null, []];
 };
 
 const Board: React.FC<BoardProps> = ({ xIsNext, squares, onPlay, boardSize = 3 }: BoardProps) => {
-  const winner = useCalculateWinner(squares, boardSize);
+  const [winner, winningLine] = useCalculateWinner(squares, boardSize);
 
   const handleClick = (index: number) => {
     if (squares[index] || winner) {
@@ -51,22 +57,32 @@ const Board: React.FC<BoardProps> = ({ xIsNext, squares, onPlay, boardSize = 3 }
 
   const [status, setStatus] = useState<string | null>(null);
   useEffect(() => {
-    setStatus(
-      winner ? `Winner: ${winner}` : squares.every(Boolean) ? "It's a draw!" : `Next player: ${xIsNext ? 'X' : 'O'}`
-    );
+    let statusMessage;
+    if (winner) {
+      statusMessage = `Winner: ${winner}`;
+    } else if (squares.every(Boolean)) {
+      statusMessage = "It's a draw!";
+    } else {
+      statusMessage = `Next player: ${xIsNext ? 'X' : 'O'}`;
+    }
+    setStatus(statusMessage);
   }, [xIsNext, squares, winner]);
 
   return (
     <div className="flex flex-col items-center">
       <div className="mb-4 font-semibold text-xl">{status}</div>
-      <div className="gap-1 grid" style={{ gridTemplateColumns: `repeat(${boardSize}, minmax(0, 1fr))` }}>
-        {squares.map((value, index) => (
-          <Square
-            key={index}
-            value={value}
-            onClick={() => handleClick(index)}
-            highlight={!!(winner && winner === value)}
-          />
+      <div className="flex flex-col gap-1">
+        {Array.from({ length: boardSize }, (_, row) => (
+          <div key={`row_${row}`} className="flex gap-1">
+            {Array.from({ length: boardSize }, (_, col) => row * boardSize + col).map((index) => (
+              <Square
+                key={`cell_${index}`}
+                value={squares[index]}
+                onClick={() => handleClick(index)}
+                highlight={!!(winner && winningLine.includes(index))}
+              />
+            ))}
+          </div>
         ))}
       </div>
     </div>
